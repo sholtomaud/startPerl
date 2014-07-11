@@ -18,7 +18,6 @@ my_carrier = carrier.carry(pl_proc.stdout);
 
 
 
-var exec = require('child_process').exec;
 /*
 exec("hydllpx.exe", function(err, stdout, stderr) {
     
@@ -63,11 +62,23 @@ exec("perl hello.pl", function(err, stdout, stderr) {
 });
 */
 
+var spawn = require('child_process').spawn,
+    child = spawn('perl hello.pl');
+
+child.stdin.setEncoding = 'utf-8';
+
+//child.stdout.pipe(process.stdout);
+
+child.stdin.write("console.log('Hello from PhantomJS')\n");
+
+
+
+var exec = require('child_process').exec;
 var myObj = {};
 myObj.list = function(callback){
   var result;
   exec("perl hello.pl", function (error, stdout, stderr) {
-     callback(JSON.parse(stdout));
+     callback(error,JSON.parse(stdout));
   });
   // No return at all!
 }
@@ -75,14 +86,17 @@ myObj.list = function(callback){
 
 // Instead of taking a return we pass a callback
 // which receives the value and carries on our computation.
+
 myObj.list(function (stdout) {
   console.log('Ta da : '+ stdout);
   
-  console.log(stdout['03539'].type);
+  //console.log(stdout['03539'].type);
    
 });
 
+
 /*
+
   for (var key in myObj) {
      var obj = myObj[key];
      console.log(key, myObj[key]);
